@@ -4,7 +4,10 @@ class Api::V1::FilmsController < ApplicationController
   end
 
   def index
-    render json: scope.map { |film| Api::V1::FilmPresenter.new(film).to_json }
+    aux = cached_response do
+      scope.map { |film| Api::V1::FilmPresenter.new(film).to_json }
+    end
+    render json: aux
   end
 
   def rentals
@@ -16,8 +19,14 @@ class Api::V1::FilmsController < ApplicationController
 
   private
 
+  def cached_response
+    cache_key = "films/index-cache"
+    object = Rails.cache.fetch(cache_key)
+    expiration_key = "#{Film.count}-#{Film.maximum(:updated_at)}"
+  end
+
   def json_response
-    Film.all.map { |m| {id: m.id, title: m.title} }.to_json
+    Film.pluck(:id, :title).map { |m| {id: m.id, title: m.title} }.to_json
   end
 
   def scope

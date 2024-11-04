@@ -1,12 +1,7 @@
-class Api::V1::FilmPresenter
-  attr_reader :resource
+class Api::V1::FilmPresenter < Api::V1::Presenter
+  private
 
-  def initialize(film)
-    @resource = film
-  end
-
-  def to_json
-    return nil unless resource
+  def as_json
     {
       id: resource.id,
       title: resource.title
