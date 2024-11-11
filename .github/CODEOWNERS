@@ -1,0 +1,3 @@
+app/controllers/* @yegorch
+app/models/* @yegorch
+test/ @yegorch
